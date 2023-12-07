@@ -8,7 +8,7 @@ namespace DataAccess.Context.EntityFramework
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-		optionsBuilder.UseNpgsql("User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=SerenderDefinition5;Pooling=false;");
+		optionsBuilder.UseNpgsql("User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=B2BProject;Pooling=false;");
 			
 		}
 
