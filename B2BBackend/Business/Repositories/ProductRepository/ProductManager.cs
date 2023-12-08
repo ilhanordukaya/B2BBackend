@@ -26,7 +26,7 @@ namespace Business.Repositories.ProductRepository
             _productDal = productDal;
         }
 
-        [SecuredAspect()]
+       // [SecuredAspect()]
         [ValidationAspect(typeof(ProductValidator))]
         [RemoveCacheAspect("IProductService.Get")]
 

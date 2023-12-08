@@ -26,7 +26,7 @@ namespace Business.Repositories.CustomerRealationshipRepository
             _customerRealationshipDal = customerRealationshipDal;
         }
 
-        [SecuredAspect()]
+       // [SecuredAspect()]
         [ValidationAspect(typeof(CustomerRealationshipValidator))]
         [RemoveCacheAspect("ICustomerRealationshipService.Get")]
 

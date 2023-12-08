@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.Aspects.Secured;
+using Business.Repositories.CustomerRepository;
 using Business.Repositories.UserRepository;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Validation;
@@ -17,14 +18,16 @@ namespace Business.Authentication
 	{
 		private readonly IUserService _userService;
 		private readonly ITokenHandler _tokenHandler;
+		private readonly ICustomerService _customerService;
 
-		public AuthManager(IUserService userService, ITokenHandler tokenHandler)
+		public AuthManager(IUserService userService, ITokenHandler tokenHandler, ICustomerService customerService)
 		{
 			_userService = userService;
 			_tokenHandler = tokenHandler;
+			_customerService = customerService;
 		}
 
-		public async Task<IDataResult<Token>> Login(LoginAuthDto loginDto)
+		public async Task<IDataResult<Token>> UserLogin(LoginAuthDto loginDto)
 		{
 			var user = await _userService.GetByEmail(loginDto.Email);
 			if (user == null)
@@ -43,6 +46,22 @@ namespace Business.Authentication
 				return new SuccessDataResult<Token>(token);
 			}
 			return new ErrorDataResult<Token>("Kullanıcı maili ya da şifre bilgisi yanlış");
+		}
+		public async Task<IDataResult<CustomerToken>> CustomerLogin(CustomerLoginDto customerLoginDto)
+		{
+			var customer = await _customerService.GetByEmail(customerLoginDto.Email);
+			if (customer == null)
+			{
+				return new ErrorDataResult<CustomerToken>("Kullanıcı maili sistemde bulunamadı");
+			}
+			var result = HashingHelper.VerifyPasswordHash(customerLoginDto.Password, customer.PasswordHash, customer.PasswordSalt);
+			if (result)
+			{
+				CustomerToken token = new CustomerToken();
+				token = _tokenHandler.CreateCustomerToken(customer);
+				return new SuccessDataResult<CustomerToken>(token);
+			}
+			return new ErrorDataResult<CustomerToken>("Kullanıcı maili ya da şifre bilgisi yanlış");
 		}
 
 		[ValidationAspect(typeof(AuthValidator))]

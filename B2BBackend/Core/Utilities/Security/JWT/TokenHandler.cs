@@ -66,5 +66,44 @@ namespace Core.Utilities.Security.JWT
 			claims.AddRoles(operationClaims.Select(p => p.Name).ToArray());
 			return claims;
 		}
+		private IEnumerable<Claim> SetCustomerClaims(Customer customer)
+		{
+			var claims = new List<Claim>();
+			claims.AddId(customer.Id.ToString());
+			claims.AddName(customer.Name);
+			return claims;
+		}
+
+		public CustomerToken CreateCustomerToken(Customer customer)
+		{
+			CustomerToken token = new CustomerToken();
+
+			//Security Key'in simetriğini alalım
+			SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Token:SecurityKey"]));
+
+			//Şifrelenmiş kimliği oluşturuyoruz
+			SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+			//Token ayarlarını yapıyoruz
+			token.Expiration = DateTime.Now.AddMinutes(60);
+			JwtSecurityToken securityToken = new JwtSecurityToken(
+				issuer: Configuration["Token:Issuer"],
+				audience: Configuration["Token:Audience"],
+				expires: token.Expiration,
+				claims: SetCustomerClaims(customer),
+				notBefore: DateTime.Now,
+				signingCredentials: signingCredentials
+				);
+
+			//Token oluşturucu sınıfından bir örnek alalım
+			JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+			//Token üretelim
+			token.CustomerAccessToken = jwtSecurityTokenHandler.WriteToken(securityToken);
+
+			//Refresh token üretelim
+			token.RefreshToken = CreateRefreshToken();
+			return token;
+		}
 	}
 }
