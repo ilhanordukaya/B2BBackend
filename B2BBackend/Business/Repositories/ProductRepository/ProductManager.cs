@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,20 +14,33 @@ using Business.Repositories.ProductRepository.Constants;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.ProductRepository;
+using Entities.Dtos;
+using Business.Repositories.ProductImageRepository;
+using Business.Repositories.PriceListDetailRepository;
+using Core.Utilities.Business;
+using Business.Repositories.BasketRepository;
 
 namespace Business.Repositories.ProductRepository
 {
     public class ProductManager : IProductService
     {
         private readonly IProductDal _productDal;
+        private readonly IProductImageService _productImageService;
+        private readonly IPriceListDetailService _priceListDetailService;
+		private readonly IBasketService _basketService;
+		//private readonly IOrderDetailService _orderDetailService;
 
-        public ProductManager(IProductDal productDal)
-        {
-            _productDal = productDal;
-        }
+		public ProductManager(IProductDal productDal, IProductImageService productImageService, IPriceListDetailService priceListDetailService,  IBasketService basketService)
+		{
+			_productDal = productDal;
+			_productImageService = productImageService;
+			_priceListDetailService = priceListDetailService;
+			
+			_basketService = basketService;
+		}
 
-       // [SecuredAspect()]
-        [ValidationAspect(typeof(ProductValidator))]
+		// [SecuredAspect()]
+		[ValidationAspect(typeof(ProductValidator))]
         [RemoveCacheAspect("IProductService.Get")]
 
         public async Task<IResult> Add(Product product)
@@ -46,16 +59,38 @@ namespace Business.Repositories.ProductRepository
             return new SuccessResult(ProductMessages.Updated);
         }
 
-        [SecuredAspect()]
-        [RemoveCacheAspect("IProductService.Get")]
+		//[SecuredAspect("admin,prdocut.delete")]
+		[RemoveCacheAspect("IProductService.Get")]
 
-        public async Task<IResult> Delete(Product product)
-        {
-            await _productDal.Delete(product);
-            return new SuccessResult(ProductMessages.Deleted);
-        }
+		public async Task<IResult> Delete(Product product)
+		{
+			IResult result = BusinessRules.Run(
+				await CheckIfProductExistToBaskets(product.Id)
+			//	await CheckIfProductExistToOrderDetails(product.Id)
+				);
 
-        [SecuredAspect()]
+			if (result != null)
+			{
+				return result;
+			}
+
+			var images = await _productImageService.GetListByProductId(product.Id);
+			foreach (var image in images.Data)
+			{
+				await _productImageService.Delete(image);
+			}
+
+			var priceListProducts = await _priceListDetailService.GetListByProductId(product.Id);
+			foreach (var item in priceListProducts)
+			{
+				await _priceListDetailService.Delete(item);
+			}
+
+			await _productDal.Delete(product);
+			return new SuccessResult(ProductMessages.Deleted);
+		}
+
+		[SecuredAspect()]
         [CacheAspect()]
         [PerformanceAspect()]
         public async Task<IDataResult<List<Product>>> GetList()
@@ -69,5 +104,33 @@ namespace Business.Repositories.ProductRepository
             return new SuccessDataResult<Product>(await _productDal.Get(p => p.Id == id));
         }
 
-    }
+		//[SecuredAspect()]
+		[CacheAspect()]
+		[PerformanceAspect()]
+		public async Task<IDataResult<List<ProductListDto>>> GetProductList(int customerId)
+		{
+            return new SuccessDataResult<List<ProductListDto>>(await _productDal.GetProductList(customerId));
+		}
+
+		public async Task<IResult> CheckIfProductExistToBaskets(int productId)
+		{
+			var result = await _basketService.GetListByProductId(productId);
+			if (result.Count() > 0)
+			{
+				return new ErrorResult("Silmeye çalýþtýðýnýz ürün sepette bulunuyor!");
+			}
+			return new SuccessResult();
+		}
+
+		//public async Task<IResult> CheckIfProductExistToOrderDetails(int productId)
+		//{
+		//	var result = await _orderDetailService.GetListByProductId(productId);
+		//	if (result.Count() > 0)
+		//	{
+		//		return new ErrorResult("Silmeye çalýþtýðýnýz ürünün sipariþi var!");
+		//	}
+		//	return new SuccessResult();
+		//}
+
+	}
 }

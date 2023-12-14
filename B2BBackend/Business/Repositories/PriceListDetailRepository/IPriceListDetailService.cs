@@ -15,5 +15,7 @@ namespace Business.Repositories.PriceListDetailRepository
         Task<IResult> Delete(PriceListDetail priceListDetail);
         Task<IDataResult<List<PriceListDetail>>> GetList();
         Task<IDataResult<PriceListDetail>> GetById(int id);
-    }
+
+		Task<List<PriceListDetail>> GetListByProductId(int productId);
+	}
 }

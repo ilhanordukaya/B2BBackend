@@ -69,5 +69,10 @@ namespace Business.Repositories.BasketRepository
             return new SuccessDataResult<Basket>(await _basketDal.Get(p => p.Id == id));
         }
 
-    }
+		public async Task<List<Basket>> GetListByProductId(int productId)
+		{
+			return await _basketDal.GetAll(p => p.ProductId == productId);
+		}
+
+	}
 }

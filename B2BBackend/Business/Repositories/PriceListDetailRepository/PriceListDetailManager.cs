@@ -69,5 +69,11 @@ namespace Business.Repositories.PriceListDetailRepository
             return new SuccessDataResult<PriceListDetail>(await _priceListDetailDal.Get(p => p.Id == id));
         }
 
-    }
+		public async Task<List<PriceListDetail>> GetListByProductId(int productId)
+		{
+			return await _priceListDetailDal.GetAll(p => p.ProductId == productId);
+		}
+
+
+	}
 }

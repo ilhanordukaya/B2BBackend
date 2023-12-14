@@ -15,5 +15,6 @@ namespace Business.Repositories.BasketRepository
         Task<IResult> Delete(Basket basket);
         Task<IDataResult<List<Basket>>> GetList();
         Task<IDataResult<Basket>> GetById(int id);
-    }
+		Task<List<Basket>> GetListByProductId(int productId);
+	}
 }

@@ -1,5 +1,6 @@
 using Business.Repositories.ProductImageRepository;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -16,9 +17,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Add(ProductImage productImage)
+        public async Task<IActionResult> Add([FromForm] ProductImageAddDto productImageAddDto)
         {
-            var result = await _productImageService.Add(productImage);
+            var result = await _productImageService.Add(productImageAddDto);
             if (result.Success)
             {
                 return Ok(result);
@@ -26,18 +27,18 @@ namespace WebApi.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Update(ProductImage productImage)
-        {
-            var result = await _productImageService.Update(productImage);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result.Message);
-        }
+		[HttpPost("[action]")]
+		public async Task<IActionResult> Update([FromForm] ProductImageUpdateDto productImageUpdateDto)
+		{
+			var result = await _productImageService.Update(productImageUpdateDto);
+			if (result.Success)
+			{
+				return Ok(result);
+			}
+			return BadRequest(result.Message);
+		}
 
-        [HttpPost("[action]")]
+		[HttpPost("[action]")]
         public async Task<IActionResult> Delete(ProductImage productImage)
         {
             var result = await _productImageService.Delete(productImage);
@@ -70,5 +71,16 @@ namespace WebApi.Controllers
             return BadRequest(result.Message);
         }
 
-    }
+		[HttpGet("[action]/{id}")]
+		public async Task<IActionResult> SetMainImage(int id)
+		{
+			var result = await _productImageService.SetMainImage(id);
+			if (result.Success)
+			{
+				return Ok(result);
+			}
+			return BadRequest(result.Message);
+		}
+
+	}
 }
