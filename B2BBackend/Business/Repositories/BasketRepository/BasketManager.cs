@@ -14,6 +14,7 @@ using Business.Repositories.BasketRepository.Constants;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.BasketRepository;
+using Entities.Dtos;
 
 namespace Business.Repositories.BasketRepository
 {
@@ -55,7 +56,7 @@ namespace Business.Repositories.BasketRepository
             return new SuccessResult(BasketMessages.Deleted);
         }
 
-        [SecuredAspect()]
+       // [SecuredAspect()]
         [CacheAspect()]
         [PerformanceAspect()]
         public async Task<IDataResult<List<Basket>>> GetList()
@@ -74,5 +75,12 @@ namespace Business.Repositories.BasketRepository
 			return await _basketDal.GetAll(p => p.ProductId == productId);
 		}
 
+		//[SecuredAspect()]
+		[CacheAspect()]
+		[PerformanceAspect()]
+		public async Task<IDataResult<List<BasketListDto>>> GetListByCustomerId(int customerId)
+		{
+			return new SuccessDataResult<List<BasketListDto>>(await _basketDal.GetListByCustomerId(customerId));
+		}
 	}
 }

@@ -26,5 +26,6 @@ namespace DataAccess.Context.EntityFramework
         public DbSet<PriceLİst> PriceLİsts { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
 	}
 }

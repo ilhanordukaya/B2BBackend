@@ -19,6 +19,7 @@ using Business.Repositories.ProductImageRepository;
 using Business.Repositories.PriceListDetailRepository;
 using Core.Utilities.Business;
 using Business.Repositories.BasketRepository;
+using Business.Repositories.OrderDetailRepository;
 
 namespace Business.Repositories.ProductRepository
 {
@@ -28,15 +29,16 @@ namespace Business.Repositories.ProductRepository
         private readonly IProductImageService _productImageService;
         private readonly IPriceListDetailService _priceListDetailService;
 		private readonly IBasketService _basketService;
-		//private readonly IOrderDetailService _orderDetailService;
+		private readonly IOrderDetailService _orderDetailService;
 
-		public ProductManager(IProductDal productDal, IProductImageService productImageService, IPriceListDetailService priceListDetailService,  IBasketService basketService)
+		public ProductManager(IProductDal productDal, IProductImageService productImageService, IPriceListDetailService priceListDetailService, IBasketService basketService, IOrderDetailService orderDetailService)
 		{
 			_productDal = productDal;
 			_productImageService = productImageService;
 			_priceListDetailService = priceListDetailService;
-			
+
 			_basketService = basketService;
+			_orderDetailService = orderDetailService;
 		}
 
 		// [SecuredAspect()]
@@ -65,8 +67,8 @@ namespace Business.Repositories.ProductRepository
 		public async Task<IResult> Delete(Product product)
 		{
 			IResult result = BusinessRules.Run(
-				await CheckIfProductExistToBaskets(product.Id)
-			//	await CheckIfProductExistToOrderDetails(product.Id)
+				await CheckIfProductExistToBaskets(product.Id),
+				await CheckIfProductExistToOrderDetails(product.Id)
 				);
 
 			if (result != null)
@@ -122,15 +124,15 @@ namespace Business.Repositories.ProductRepository
 			return new SuccessResult();
 		}
 
-		//public async Task<IResult> CheckIfProductExistToOrderDetails(int productId)
-		//{
-		//	var result = await _orderDetailService.GetListByProductId(productId);
-		//	if (result.Count() > 0)
-		//	{
-		//		return new ErrorResult("Silmeye çalýþtýðýnýz ürünün sipariþi var!");
-		//	}
-		//	return new SuccessResult();
-		//}
+		public async Task<IResult> CheckIfProductExistToOrderDetails(int productId)
+		{
+			var result = await _orderDetailService.GetListByProductId(productId);
+			if (result.Count() > 0)
+			{
+				return new ErrorResult("Silmeye çalýþtýðýnýz ürünün sipariþi var!");
+			}
+			return new SuccessResult();
+		}
 
 	}
 }

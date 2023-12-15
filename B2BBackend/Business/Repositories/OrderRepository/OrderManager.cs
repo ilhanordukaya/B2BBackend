@@ -14,29 +14,71 @@ using Business.Repositories.OrderRepository.Constants;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.OrderRepository;
+using Entities.Dtos;
+using Business.Repositories.BasketRepository;
+using Business.Repositories.OrderDetailRepository;
 
 namespace Business.Repositories.OrderRepository
 {
     public class OrderManager : IOrderService
     {
         private readonly IOrderDal _orderDal;
+		private readonly IOrderDetailService _orderDetailService;
+		private readonly IBasketService _basketService;
 
-        public OrderManager(IOrderDal orderDal)
-        {
-            _orderDal = orderDal;
-        }
+		public OrderManager(IOrderDal orderDal, IOrderDetailService orderDetailService, IBasketService basketService)
+		{
+			_orderDal = orderDal;
+			_orderDetailService = orderDetailService;
+			_basketService = basketService;
+		}
 
-        [SecuredAspect()]
-        [ValidationAspect(typeof(OrderValidator))]
-        [RemoveCacheAspect("IOrderService.Get")]
+		[SecuredAspect()]
+		[ValidationAspect(typeof(OrderValidator))]
+		[RemoveCacheAspect("IOrderService.Get")]
 
-        public async Task<IResult> Add(Order order)
-        {
-            await _orderDal.Add(order);
-            return new SuccessResult(OrderMessages.Added);
-        }
+		public async Task<IResult> Add(int customerId)
+		{
+			var baskets = await _basketService.GetListByCustomerId(customerId);
 
-        [SecuredAspect()]
+			string newOrderNumber = _orderDal.GetOrderNumber();
+			Order order = new()
+			{
+				Id = 0,
+			//	CustomerId = baskets.Data[0].CustomerId,
+				CustomerId = baskets.Data[0].CustomerId,
+				Date = DateTime.Now,
+				OrderNumber = newOrderNumber,
+				Status = "Onay Bekliyor"
+			};
+			await _orderDal.Add(order);
+
+			foreach (var basket in baskets.Data)
+			{
+				OrderDetail orderDetail = new()
+				{
+					Id = 0,
+					OrderId = order.Id,
+					Price = basket.Price,
+					ProductId = basket.ProductId,
+					Quantity = basket.Quantity
+				};
+				await _orderDetailService.Add(orderDetail);
+
+				Basket basketEntity = new()
+				{
+					Id = basket.Id,
+					CustomerId = basket.CustomerId,
+					Price = basket.Price,
+					Quantity = basket.Quantity,
+					ProductId = basket.ProductId
+				};
+				await _basketService.Delete(basketEntity);
+			}
+			return new SuccessResult(OrderMessages.Added);
+		}
+
+		[SecuredAspect()]
         [ValidationAspect(typeof(OrderValidator))]
         [RemoveCacheAspect("IOrderService.Get")]
 

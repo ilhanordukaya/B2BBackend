@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities.Concrete;
 using Core.Utilities.Result.Abstract;
+using Entities.Dtos;
 
 namespace Business.Repositories.BasketRepository
 {
@@ -16,5 +17,7 @@ namespace Business.Repositories.BasketRepository
         Task<IDataResult<List<Basket>>> GetList();
         Task<IDataResult<Basket>> GetById(int id);
 		Task<List<Basket>> GetListByProductId(int productId);
+
+        Task<IDataResult<List<BasketListDto>>> GetListByCustomerId(int customerId);
 	}
 }

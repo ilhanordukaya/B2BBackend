@@ -27,6 +27,8 @@ using Business.Repositories.ProductImageRepository;
 using DataAccess.Repositories.ProductImageRepository;
 using Business.Repositories.ProductRepository;
 using DataAccess.Repositories.ProductRepository;
+using Business.Repositories.OrderDetailRepository;
+using DataAccess.Repositories.OrderDetailRepository;
 using DataAccess.Repositories.UserRepository;
 
 namespace Business.DependencyResolvers.Autofac
@@ -74,6 +76,9 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<ProductManager>().As<IProductService>().SingleInstance();
             builder.RegisterType<EfProductDal>().As<IProductDal>().SingleInstance();
+
+            builder.RegisterType<OrderDetailManager>().As<IOrderDetailService>().SingleInstance();
+            builder.RegisterType<EfOrderDetailDal>().As<IOrderDetailDal>().SingleInstance();
 
 			var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
