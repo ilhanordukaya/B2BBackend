@@ -56,15 +56,15 @@ namespace Business.Repositories.OrderDetailRepository
             return new SuccessResult(OrderDetailMessages.Deleted);
         }
 
-        [SecuredAspect()]
-        [CacheAspect()]
-        [PerformanceAspect()]
-        public async Task<IDataResult<List<OrderDetail>>> GetList()
-        {
-            return new SuccessDataResult<List<OrderDetail>>(await _orderDetailDal.GetAll());
-        }
+		[SecuredAspect()]
+		[CacheAspect()]
+		[PerformanceAspect()]
+		public async Task<IDataResult<List<OrderDetail>>> GetList(int orderId)
+		{
+			return new SuccessDataResult<List<OrderDetail>>(await _orderDetailDal.GetAll(p => p.OrderId == orderId));
+		}
 
-        [SecuredAspect()]
+		[SecuredAspect()]
         public async Task<IDataResult<OrderDetail>> GetById(int id)
         {
             return new SuccessDataResult<OrderDetail>(await _orderDetailDal.Get(p => p.Id == id));

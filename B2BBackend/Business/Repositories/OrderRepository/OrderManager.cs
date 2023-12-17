@@ -91,13 +91,19 @@ namespace Business.Repositories.OrderRepository
         [SecuredAspect()]
         [RemoveCacheAspect("IOrderService.Get")]
 
-        public async Task<IResult> Delete(Order order)
-        {
-            await _orderDal.Delete(order);
-            return new SuccessResult(OrderMessages.Deleted);
-        }
+		public async Task<IResult> Delete(Order order)
+		{
+			var details = await _orderDetailService.GetList(order.Id);
+			foreach (var detail in details.Data)
+			{
+				await _orderDetailService.Delete(detail);
+			}
 
-        [SecuredAspect()]
+			await _orderDal.Delete(order);
+			return new SuccessResult(OrderMessages.Deleted);
+		}
+
+		[SecuredAspect()]
         [CacheAspect()]
         [PerformanceAspect()]
         public async Task<IDataResult<List<Order>>> GetList()
