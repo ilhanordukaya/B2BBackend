@@ -48,18 +48,18 @@ namespace WebApi.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetList()
-        {
-            var result = await _productService.GetList();
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result.Message);
-        }
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetList()
+		{
+			var result = await _productService.GetList();
+			if (result.Success)
+			{
+				return Ok(result);
+			}
+			return BadRequest(result.Message);
+		}
 
-        [HttpGet("[action]/{id}")]
+		[HttpGet("[action]/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _productService.GetById(id);
