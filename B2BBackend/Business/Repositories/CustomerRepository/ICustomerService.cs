@@ -14,8 +14,11 @@ namespace Business.Repositories.CustomerRepository
         Task<IResult> Add(CustomerRegisterDto customerRegisterDto);
         Task<IResult> Update(Customer customer);
         Task<IResult> Delete(Customer customer);
-        Task<IDataResult<List<Customer>>> GetList();
+       
         Task<IDataResult<Customer>> GetById(int id);
 		Task<Customer> GetByEmail(string email);
+		Task<IResult> ChangePasswordByAdminPanel(CustomerChangePassworByAdminPanelDto customerDto);
+		Task<IDataResult<List<CustomerDto>>> GetList();
+		Task<IDataResult<CustomerDto>> GetDtoById(int id);
 	}
 }

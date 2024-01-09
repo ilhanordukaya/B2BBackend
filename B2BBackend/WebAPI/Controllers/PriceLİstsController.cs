@@ -8,15 +8,15 @@ namespace WebApi.Controllers
     [ApiController]
     public class PriceLİstsController : ControllerBase
     {
-        private readonly IPriceLİstService _priceLİstService;
+        private readonly IPriceListService _priceLİstService;
 
-        public PriceLİstsController(IPriceLİstService priceLİstService)
+        public PriceLİstsController(IPriceListService priceLİstService)
         {
             _priceLİstService = priceLİstService;
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Add(PriceLİst priceLİst)
+        public async Task<IActionResult> Add(PriceList priceLİst)
         {
             var result = await _priceLİstService.Add(priceLİst);
             if (result.Success)
@@ -27,7 +27,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Update(PriceLİst priceLİst)
+        public async Task<IActionResult> Update(PriceList priceLİst)
         {
             var result = await _priceLİstService.Update(priceLİst);
             if (result.Success)
@@ -38,7 +38,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Delete(PriceLİst priceLİst)
+        public async Task<IActionResult> Delete(PriceList priceLİst)
         {
             var result = await _priceLİstService.Delete(priceLİst);
             if (result.Success)

@@ -7,7 +7,7 @@ using Entities.Concrete;
 
 namespace Business.Repositories.PriceLİstRepository.Validation
 {
-    public class PriceLİstValidator : AbstractValidator<PriceLİst>
+    public class PriceLİstValidator : AbstractValidator<PriceList>
     {
         public PriceLİstValidator()
         {

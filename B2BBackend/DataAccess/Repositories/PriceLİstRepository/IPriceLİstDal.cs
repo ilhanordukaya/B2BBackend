@@ -8,7 +8,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Repositories.PriceLİstRepository
 {
-    public interface IPriceLİstDal : IEntityRepository<PriceLİst>
+    public interface IPriceListDal : IEntityRepository<PriceList>
     {
     }
 }

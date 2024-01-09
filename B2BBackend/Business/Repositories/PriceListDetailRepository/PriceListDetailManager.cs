@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,29 +14,43 @@ using Business.Repositories.PriceListDetailRepository.Constants;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.PriceListDetailRepository;
+using Entities.Dtos;
+using DataAccess.Repositories.OrderDetailRepository;
+using Core.Utilities.Business;
 
 namespace Business.Repositories.PriceListDetailRepository
 {
     public class PriceListDetailManager : IPriceListDetailService
     {
         private readonly IPriceListDetailDal _priceListDetailDal;
+        private readonly IOrderDetailDal _orderDetailDal;
 
-        public PriceListDetailManager(IPriceListDetailDal priceListDetailDal)
-        {
-            _priceListDetailDal = priceListDetailDal;
-        }
+		public PriceListDetailManager(IPriceListDetailDal priceListDetailDal, IOrderDetailDal orderDetailDal)
+		{
+			_priceListDetailDal = priceListDetailDal;
+			_orderDetailDal = orderDetailDal;
+		}
 
-       // [SecuredAspect()]
-        [ValidationAspect(typeof(PriceListDetailValidator))]
+		// [SecuredAspect()]
+		[ValidationAspect(typeof(PriceListDetailValidator))]
         [RemoveCacheAspect("IPriceListDetailService.Get")]
 
-        public async Task<IResult> Add(PriceListDetail priceListDetail)
-        {
-            await _priceListDetailDal.Add(priceListDetail);
-            return new SuccessResult(PriceListDetailMessages.Added);
-        }
+		public async Task<IResult> Add(PriceListDetail priceListDetail)
+		{
+			IResult result = BusinessRules.Run(
+				await CheckIfProductExist(priceListDetail)
+				);
 
-        [SecuredAspect()]
+			if (result != null)
+			{
+				return result;
+			}
+
+			await _priceListDetailDal.Add(priceListDetail);
+			return new SuccessResult(PriceListDetailMessages.Added);
+		}
+
+		[SecuredAspect()]
         [ValidationAspect(typeof(PriceListDetailValidator))]
         [RemoveCacheAspect("IPriceListDetailService.Get")]
 
@@ -74,6 +88,23 @@ namespace Business.Repositories.PriceListDetailRepository
 			return await _priceListDetailDal.GetAll(p => p.ProductId == productId);
 		}
 
+		[SecuredAspect()]
+		[CacheAspect()]
+		[PerformanceAspect()]
+		public async Task<IDataResult<List<OrderDetailDto>>> GetListDto(int orderId)
+		{
+			return new SuccessDataResult<List<OrderDetailDto>>(await _orderDetailDal.GetListDto(orderId));
+		}
+
+		public async Task<IResult> CheckIfProductExist(PriceListDetail priceListDetail)
+		{
+			var result = await _priceListDetailDal.Get(p => p.PriceListId == priceListDetail.PriceListId && p.ProductId == priceListDetail.ProductId);
+			if (result != null)
+			{
+				return new ErrorResult("Bu ürün daha önce fiyat listesine eklenmiş!");
+			}
+			return new SuccessResult();
+		}
 
 	}
 }

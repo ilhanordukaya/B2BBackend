@@ -68,8 +68,8 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<PriceListDetailManager>().As<IPriceListDetailService>().SingleInstance();
             builder.RegisterType<EfPriceListDetailDal>().As<IPriceListDetailDal>().SingleInstance();
 
-            builder.RegisterType<PriceLİstManager>().As<IPriceLİstService>().SingleInstance();
-            builder.RegisterType<EfPriceLİstDal>().As<IPriceLİstDal>().SingleInstance();
+            builder.RegisterType<PriceListManager>().As<IPriceListService>().SingleInstance();
+            builder.RegisterType<EfPriceLİstDal>().As<IPriceListDal>().SingleInstance();
 
             builder.RegisterType<ProductImageManager>().As<IProductImageService>().SingleInstance();
             builder.RegisterType<EfProductImageDal>().As<IProductImageDal>().SingleInstance();

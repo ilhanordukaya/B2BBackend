@@ -37,7 +37,18 @@ namespace WebApi.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpPost("[action]")]
+		[HttpGet("[action]/{priceListId}")]
+		public async Task<IActionResult> GetListDto(int priceListId)
+		{
+			var result = await _priceListDetailService.GetListDto(priceListId);
+			if (result.Success)
+			{
+				return Ok(result);
+			}
+			return BadRequest(result.Message);
+		}
+
+		[HttpPost("[action]")]
         public async Task<IActionResult> Delete(PriceListDetail priceListDetail)
         {
             var result = await _priceListDetailService.Delete(priceListDetail);

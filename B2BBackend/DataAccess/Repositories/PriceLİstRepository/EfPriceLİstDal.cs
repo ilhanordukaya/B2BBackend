@@ -10,7 +10,7 @@ using DataAccess.Context.EntityFramework;
 
 namespace DataAccess.Repositories.PriceLİstRepository
 {
-    public class EfPriceLİstDal : EfEntityRepositoryBase<PriceLİst, SimpleContextDb>, IPriceLİstDal
+    public class EfPriceLİstDal : EfEntityRepositoryBase<PriceList, SimpleContextDb>, IPriceListDal
     {
     }
 }

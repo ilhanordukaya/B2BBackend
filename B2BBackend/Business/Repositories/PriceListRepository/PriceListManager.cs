@@ -17,11 +17,11 @@ using DataAccess.Repositories.PriceLİstRepository;
 
 namespace Business.Repositories.PriceLİstRepository
 {
-    public class PriceLİstManager : IPriceLİstService
+    public class PriceListManager : IPriceListService
     {
-        private readonly IPriceLİstDal _priceLİstDal;
+        private readonly IPriceListDal _priceLİstDal;
 
-        public PriceLİstManager(IPriceLİstDal priceLİstDal)
+        public PriceListManager(IPriceListDal priceLİstDal)
         {
             _priceLİstDal = priceLİstDal;
         }
@@ -30,7 +30,7 @@ namespace Business.Repositories.PriceLİstRepository
         [ValidationAspect(typeof(PriceLİstValidator))]
         [RemoveCacheAspect("IPriceLİstService.Get")]
 
-        public async Task<IResult> Add(PriceLİst priceLİst)
+        public async Task<IResult> Add(PriceList priceLİst)
         {
             await _priceLİstDal.Add(priceLİst);
             return new SuccessResult(PriceLİstMessages.Added);
@@ -40,7 +40,7 @@ namespace Business.Repositories.PriceLİstRepository
         [ValidationAspect(typeof(PriceLİstValidator))]
         [RemoveCacheAspect("IPriceLİstService.Get")]
 
-        public async Task<IResult> Update(PriceLİst priceLİst)
+        public async Task<IResult> Update(PriceList priceLİst)
         {
             await _priceLİstDal.Update(priceLİst);
             return new SuccessResult(PriceLİstMessages.Updated);
@@ -49,7 +49,7 @@ namespace Business.Repositories.PriceLİstRepository
         [SecuredAspect()]
         [RemoveCacheAspect("IPriceLİstService.Get")]
 
-        public async Task<IResult> Delete(PriceLİst priceLİst)
+        public async Task<IResult> Delete(PriceList priceLİst)
         {
             await _priceLİstDal.Delete(priceLİst);
             return new SuccessResult(PriceLİstMessages.Deleted);
@@ -58,15 +58,15 @@ namespace Business.Repositories.PriceLİstRepository
         [SecuredAspect()]
         [CacheAspect()]
         [PerformanceAspect()]
-        public async Task<IDataResult<List<PriceLİst>>> GetList()
+        public async Task<IDataResult<List<PriceList>>> GetList()
         {
-            return new SuccessDataResult<List<PriceLİst>>(await _priceLİstDal.GetAll());
+            return new SuccessDataResult<List<PriceList>>(await _priceLİstDal.GetAll());
         }
 
         [SecuredAspect()]
-        public async Task<IDataResult<PriceLİst>> GetById(int id)
+        public async Task<IDataResult<PriceList>> GetById(int id)
         {
-            return new SuccessDataResult<PriceLİst>(await _priceLİstDal.Get(p => p.Id == id));
+            return new SuccessDataResult<PriceList>(await _priceLİstDal.Get(p => p.Id == id));
         }
 
     }
