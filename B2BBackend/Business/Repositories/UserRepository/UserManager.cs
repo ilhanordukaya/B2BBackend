@@ -295,5 +295,31 @@ namespace Business.Repositories.UserRepository
 
 			return new SuccessResult(UserMessages.ConfirmUserMailSendSuccessiful);
 		}
+		[SecuredAspect()]
+		[RemoveCacheAspect("IUserService.Get")]
+		public async Task<IResult> UpdateUserByAdminPanel(UserDto user)
+		{
+			var userEntity = await _userDal.Get(p => p.Id == user.Id);
+
+			var result = HashingHelper.VerifyPasswordHash(user.Password, userEntity.PasswordHash, userEntity.PasswordSalt);
+			if (result)
+			{
+				if (user.NewPassword != "")
+				{
+					byte[] passwordHash, paswordSalt;
+					HashingHelper.CreatePassword(user.NewPassword, out passwordHash, out paswordSalt);
+					userEntity.PasswordHash = passwordHash;
+					userEntity.PasswordSalt = paswordSalt;
+				}
+
+				userEntity.Name = user.Name;
+				await _userDal.Update(userEntity);
+				return new SuccessResult(UserMessages.UpdatedUser);
+			}
+			else
+			{
+				return new ErrorResult("Şifreniz mevcut şifreniz ile tutmuyor");
+			}
+		}
 	}
 }

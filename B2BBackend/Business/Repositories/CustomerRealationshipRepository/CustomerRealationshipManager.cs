@@ -42,9 +42,19 @@ namespace Business.Repositories.CustomerRealationshipRepository
 
         public async Task<IResult> Update(CustomerRealationship customerRealationship)
         {
-            await _customerRealationshipDal.Update(customerRealationship);
-            return new SuccessResult(CustomerRealationshipMessages.Updated);
-        }
+			var result = await _customerRealationshipDal.Get(p => p.CustomerId == customerRealationship.CustomerId);
+			if (result != null)
+			{
+				customerRealationship.Id = result.Id;
+				await _customerRealationshipDal.Update(customerRealationship);
+			}
+			else
+			{
+				await _customerRealationshipDal.Add(customerRealationship);
+			}
+
+			return new SuccessResult(CustomerRealationshipMessages.Updated);
+		}
 
         [SecuredAspect()]
         [RemoveCacheAspect("ICustomerRealationshipService.Get")]

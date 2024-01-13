@@ -19,5 +19,6 @@ namespace Business.Repositories.UserRepository
 		Task<List<OperationClaim>> GetUserOperationClaims(int userId);
 		Task<IDataResult<User>> GetById(int id);
 		Task<User> GetByIdForAuth(int id);
+		Task<IResult> UpdateUserByAdminPanel(UserDto user);
 	}
 }
